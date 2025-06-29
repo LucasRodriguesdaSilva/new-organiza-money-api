@@ -1,61 +1,453 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚀 Laravel Backend API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema backend desenvolvido em Laravel com PHP 8.3, PostgreSQL e Docker para containerização.
 
-## About Laravel
+## 📋 Índice
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Pré-requisitos](#pré-requisitos)
+- [Instalação](#instalação)
+- [Configuração](#configuração)
+- [Uso](#uso)
+- [Desenvolvimento](#desenvolvimento)
+- [Testes](#testes)
+- [Deploy](#deploy)
+- [Comandos Úteis](#comandos-úteis)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Contribuição](#contribuição)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🔧 Pré-requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Docker** >= 20.10
+- **Docker Compose** >= 2.0
+- **Git**
+- **Make** (opcional, para comandos facilitados)
 
-## Learning Laravel
+### Sem Docker (desenvolvimento local):
+- **PHP** >= 8.2
+- **Composer** >= 2.0
+- **PostgreSQL** >= 13
+- **Node.js** >= 18 (para assets)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 📦 Instalação
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 1. Clone o repositório
+```bash
+git clone https://github.com/seu-usuario/seu-backend.git
+cd seu-backend
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Configuração inicial com Docker
+```bash
+# Usando Make (recomendado)
+make setup
 
-## Laravel Sponsors
+# Ou manualmente
+docker-compose build
+docker-compose up -d
+docker-compose exec app composer install
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan migrate
+docker-compose exec app php artisan db:seed
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 3. Configuração sem Docker
+```bash
+# Instalar dependências
+composer install
+npm install
 
-### Premium Partners
+# Configurar ambiente
+cp .env.example .env
+php artisan key:generate
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Configurar banco de dados (veja seção Configuração)
+php artisan migrate
+php artisan db:seed
 
-## Contributing
+# Compilar assets
+npm run build
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## ⚙️ Configuração
 
-## Code of Conduct
+### 1. Variáveis de Ambiente
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Copie o arquivo `.env.example` para `.env` e configure:
 
-## Security Vulnerabilities
+```env
+# Aplicação
+APP_NAME="Laravel Backend"
+APP_ENV=local
+APP_KEY=base64:SUA_CHAVE_AQUI
+APP_DEBUG=true
+APP_URL=http://localhost:8000
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Banco de Dados
+DB_CONNECTION=pgsql
+DB_HOST=db                    # 'localhost' se não usar Docker
+DB_PORT=5432
+DB_DATABASE=laravel_db
+DB_USERNAME=laravel_user
+DB_PASSWORD=laravel_password
 
-## License
+# Cache
+CACHE_DRIVER=redis
+QUEUE_CONNECTION=redis
+SESSION_DRIVER=redis
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Redis
+REDIS_HOST=redis              # 'localhost' se não usar Docker
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+# Email
+MAIL_MAILER=smtp
+MAIL_HOST=mailhog
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+
+# JWT (se usar autenticação)
+JWT_SECRET=sua_chave_jwt_aqui
+
+# APIs Externas
+FRONTEND_URL=http://localhost:3000
+```
+
+### 2. Configuração do Banco de Dados
+
+#### Com Docker:
+O PostgreSQL será configurado automaticamente via Docker Compose.
+
+#### Sem Docker:
+```bash
+# Criar banco de dados
+createdb laravel_db
+
+# Ou via psql
+psql -U postgres
+CREATE DATABASE laravel_db;
+CREATE USER laravel_user WITH PASSWORD 'laravel_password';
+GRANT ALL PRIVILEGES ON DATABASE laravel_db TO laravel_user;
+```
+
+### 3. Configuração de Permissões
+```bash
+# Com Docker
+docker-compose exec app chmod -R 775 storage bootstrap/cache
+docker-compose exec app chown -R www:www storage bootstrap/cache
+
+# Sem Docker
+chmod -R 775 storage bootstrap/cache
+```
+
+## 🔥 Uso
+
+### Iniciar Desenvolvimento
+
+#### Com Docker:
+```bash
+# Iniciar todos os serviços
+make up
+# ou
+docker-compose up -d
+
+# Verificar logs
+make logs
+# ou
+docker-compose logs -f
+```
+
+#### Sem Docker:
+```bash
+# Iniciar servidor
+php artisan serve --host=0.0.0.0 --port=8000
+
+# Iniciar queue worker (em outro terminal)
+php artisan queue:work
+
+# Iniciar scheduler (em outro terminal)
+php artisan schedule:work
+```
+
+### Acessos
+
+- **API**: http://localhost:8000
+- **Documentação**: http://localhost:8000/docs (se configurado)
+- **PostgreSQL**: localhost:5432
+- **Adminer** (se configurado): http://localhost:8080
+
+## 🛠️ Desenvolvimento
+
+### Estrutura de Pastas
+```
+app/
+├── Console/           # Comandos Artisan
+├── Exceptions/        # Tratamento de exceções
+├── Http/
+│   ├── Controllers/   # Controladores da API
+│   ├── Middleware/    # Middleware customizado
+│   ├── Requests/      # Form Requests
+│   └── Resources/     # API Resources
+├── Models/            # Modelos Eloquent
+├── Providers/         # Service Providers
+└── Services/          # Services/Business Logic
+
+database/
+├── factories/         # Model Factories
+├── migrations/        # Migrations
+└── seeders/          # Database Seeders
+
+routes/
+├── api.php           # Rotas da API
+└── web.php           # Rotas web
+```
+
+### Comandos de Desenvolvimento
+
+```bash
+# Criar controller
+php artisan make:controller Api/UserController --api
+
+# Criar model com migration
+php artisan make:model User -m
+
+# Criar request
+php artisan make:request StoreUserRequest
+
+# Criar resource
+php artisan make:resource UserResource
+
+# Criar service
+php artisan make:service UserService
+
+# Criar job
+php artisan make:job ProcessUserData
+
+# Criar middleware
+php artisan make:middleware CheckApiKey
+```
+
+### Executar Migrations
+```bash
+# Com Docker
+make migrate
+# ou
+docker-compose exec app php artisan migrate
+
+# Sem Docker
+php artisan migrate
+```
+
+### Executar Seeders
+```bash
+# Com Docker
+make seed
+# ou
+docker-compose exec app php artisan db:seed
+
+# Sem Docker
+php artisan db:seed
+```
+
+## 🧪 Testes
+
+### Configuração de Testes
+
+Crie um arquivo `.env.testing`:
+```env
+APP_ENV=testing
+DB_CONNECTION=pgsql
+DB_HOST=localhost
+DB_PORT=5432
+DB_DATABASE=laravel_test
+DB_USERNAME=laravel_user
+DB_PASSWORD=laravel_password
+```
+
+### Executar Testes
+
+```bash
+# Com Docker
+make test
+# ou
+docker-compose exec app php artisan test
+
+# Sem Docker
+php artisan test
+
+# Com cobertura
+php artisan test --coverage
+
+# Testes específicos
+php artisan test --filter UserTest
+```
+
+### Tipos de Testes
+
+- **Unit Tests**: `tests/Unit/`
+- **Feature Tests**: `tests/Feature/`
+- **Integration Tests**: `tests/Integration/`
+
+## 🚀 Deploy
+
+### Usando GitHub Actions
+
+O projeto inclui workflow automatizado. Configure os secrets:
+
+```
+DOCKER_USERNAME=seu_usuario_docker
+DOCKER_PASSWORD=sua_senha_docker
+HOST=ip_do_servidor
+USERNAME=usuario_ssh
+SSH_KEY=chave_privada_ssh
+PORT=22
+PROJECT_PATH=/var/www/backend
+```
+
+### Deploy Manual
+
+```bash
+# No servidor
+git pull origin main
+docker-compose pull
+docker-compose down
+docker-compose up -d
+docker-compose exec app php artisan migrate --force
+docker-compose exec app php artisan config:cache
+docker-compose exec app php artisan route:cache
+docker-compose exec app php artisan view:cache
+```
+
+## 📝 Comandos Úteis
+
+### Makefile
+```bash
+make help           # Mostrar ajuda
+make build          # Construir imagens
+make up             # Iniciar containers
+make down           # Parar containers
+make restart        # Reiniciar containers
+make logs           # Mostrar logs
+make shell          # Acessar shell do container
+make composer       # Instalar dependências
+make migrate        # Executar migrations
+make fresh          # Recrear banco
+make seed           # Executar seeders
+make test           # Executar testes
+```
+
+### Artisan Commands
+```bash
+# Cache
+php artisan cache:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Queue
+php artisan queue:work
+php artisan queue:restart
+php artisan queue:failed
+
+# Maintenance
+php artisan down
+php artisan up
+
+# Tinker (REPL)
+php artisan tinker
+```
+
+## 📁 Estrutura do Projeto
+
+```
+backend/
+├── app/                    # Código da aplicação
+├── bootstrap/              # Bootstrap da aplicação
+├── config/                 # Arquivos de configuração
+├── database/               # Migrations, seeds, factories
+├── public/                 # Arquivos públicos
+├── resources/              # Views, assets
+├── routes/                 # Definição de rotas
+├── storage/                # Arquivos de storage
+├── tests/                  # Testes automatizados
+├── docker/                 # Configurações Docker
+│   ├── nginx/
+│   ├── php/
+│   └── postgres/
+├── .env.example           # Exemplo de variáveis de ambiente
+├── .gitignore             # Arquivos ignorados pelo Git
+├── composer.json          # Dependências PHP
+├── docker-compose.yml     # Configuração Docker
+├── Dockerfile             # Imagem Docker
+├── Makefile              # Comandos facilitados
+└── README.md             # Este arquivo
+```
+
+## 🔐 Segurança
+
+### Boas Práticas Implementadas
+
+- ✅ Validação de entrada com Form Requests
+- ✅ Sanitização de dados
+- ✅ Rate limiting
+- ✅ CORS configurado
+- ✅ Logs de segurança
+- ✅ Hash de senhas com bcrypt
+- ✅ Middleware de autenticação
+- ✅ Validação CSRF
+
+### Configurações Importantes
+
+```php
+// config/app.php
+'debug' => env('APP_DEBUG', false),
+
+// config/cors.php
+'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+```
+
+## 🤝 Contribuição
+
+### Padrões de Código
+
+- **PSR-4** para autoloading
+- **PSR-12** para style guide
+- **PHPDoc** para documentação
+- **Conventional Commits** para mensagens
+
+### Fluxo de Contribuição
+
+1. Fork o projeto
+2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
+3. Commit suas mudanças (`git commit -m 'feat: adiciona nova funcionalidade'`)
+4. Push para a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um Pull Request
+
+### Executar Análise de Código
+
+```bash
+# PHP CS Fixer
+vendor/bin/php-cs-fixer fix
+
+# PHPStan
+vendor/bin/phpstan analyse
+
+# Audit de segurança
+composer audit
+```
+
+## 📞 Suporte
+
+- **Documentação**: [Laravel Docs](https://laravel.com/docs)
+- **Issues**: [GitHub Issues](https://github.com/seu-usuario/seu-backend/issues)
+- **Email**: seu-email@dominio.com
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+**Desenvolvido com ❤️ usando Laravel**
