@@ -13,7 +13,7 @@
 # Define o comando base para executar ações dentro do contêiner da aplicação.
 # Usamos "-u www-data" para garantir que os comandos rodem com o usuário correto
 # do servidor web, evitando problemas de permissão de arquivos.
-EXEC_APP   := docker compose exec -u www-data app
+EXEC_APP   := docker exec -it laravel_app
 ARTISAN    := php artisan
 COMPOSER   := $(EXEC_APP) composer
 
@@ -56,6 +56,10 @@ artisan: ## Executa um comando Artisan. Ex: make artisan cmd="queue:work"
 	@echo "-> Executando: php artisan $(cmd)"
 	@$(ARTISAN) $(cmd)
 
+artisan-docker: ## Executa um comando Artisan. Ex: make artisan cmd="queue:work"
+	@echo "-> Executando: $(EXEC_APP) $(ARTISAN) $(cmd)"
+	@$(ARTISAN) $(cmd)
+
 key-generate: ## Gera a chave da aplicação Laravel (APP_KEY).
 	@echo "-> Gerando a chave da aplicação..."
 	@$(ARTISAN) key:generate
@@ -67,7 +71,7 @@ test: ## Executa o conjunto de testes da aplicação (PHPUnit).
 ##@ Banco de Dados
 migrate: ## Executa as migrações do banco de dados.
 	@echo "-> Executando migrações..."
-	@$(ARTISAN) migrate
+	@$(EXEC_APP) $(ARTISAN) migrate
 
 fresh: ## Apaga todas as tabelas e executa as migrações novamente.
 	@echo "-> Recriando o banco de dados do zero..."
@@ -84,11 +88,11 @@ logs: ## Exibe os logs de todos os serviços em tempo real.
 
 shell: ## Acessa o terminal (bash) do contêiner da aplicação.
 	@echo "-> Acessando o terminal do contêiner 'app'..."
-	@docker compose exec -u www-data app bash
+	@docker compose exec app bash
 
 permissions: ## Corrige as permissões (executado como root no contêiner).
-	@echo "-> Corrigindo propriedade dos arquivos para 'www-data' (como root)..."
-	@docker compose exec app chown -R www-data:www-data storage bootstrap/cache
+	@echo "-> Corrigindo propriedade dos arquivos para 'laravel' (como root)..."
+	@docker compose exec app chown -R laravel:laravel .
 	@echo "-> Propriedade dos arquivos corrigida com sucesso."
 
 ##@ Ajuda
