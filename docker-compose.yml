@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
-      - ./:/var/www/html
+      - .:/var/www/html
     networks:
       - laravel
 
@@ -29,7 +29,7 @@ services:
 
   # Serviço do Banco de Dados (PostgreSQL)
   pgsql:
-    image: postgres:16-alpine # Usando uma imagem leve do Postgres 16
+    image: postgres:16-alpine
     container_name: laravel_pgsql
     restart: unless-stopped
     environment:
@@ -37,7 +37,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ./docker-data/pgsql:/var/lib/postgresql/data
+      - pgsql_data:/var/lib/postgresql/data  # <-- 1. Use um volume nomeado aqui
     ports:
       - "5432:5432"
     networks:
@@ -46,3 +46,7 @@ services:
 networks:
   laravel:
     driver: bridge
+    
+volumes:
+  pgsql_data:
+    driver: local
