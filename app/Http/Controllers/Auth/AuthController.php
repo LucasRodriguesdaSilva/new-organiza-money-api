@@ -14,6 +14,18 @@ class AuthController extends Controller
 {
     public function __construct(protected AuthService $authService) {}
 
+        
+    /**
+     * Registrar um novo usuário
+     *
+     * Cria um novo usuário no sistema e retorna os dados do usuário
+     * junto com um token de acesso para autenticação.
+     *
+     * @param  RegisterRequest $request
+     * @return JsonResponse
+     * 
+     * @group Autenticação
+     */
     public function store(RegisterRequest $request): JsonResponse
     {
         DB::beginTransaction();

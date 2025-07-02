@@ -7,7 +7,14 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class AuthService
-{
+{    
+    /**
+     * Registra um usuário novo
+     *
+     * @param  array $data
+     * Informações para o cadastro dos usuários
+     * @return array
+     */
     public function registrarUsuario(array $data): array
     {
         $user = User::create([
