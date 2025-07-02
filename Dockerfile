@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd zip
 
-RUN groupadd -g ${GID} laravel && \
-    useradd -u ${UID} -g laravel -m -s /bin/bash laravel
+RUN groupadd -o -g ${GID} laravel || true && \
+    useradd  -o -u ${UID} -g laravel -m -s /bin/bash laravel || true
 
 # Instale o Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -38,7 +38,7 @@ COPY . .
 
 # Defina as permissões para o diretório de armazenamento
 # RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chown -R laravel:laravel /var/www/html
+COPY --chown=laravel:laravel . .
 
 
 USER laravel
