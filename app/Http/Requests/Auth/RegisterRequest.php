@@ -42,7 +42,7 @@ class RegisterRequest extends FormRequest
             'name.required' => 'O campo nome é obrigatório.',
             'email.required' => 'O campo e-mail é obrigatório.',
             'email.email' => 'Por favor, insira um endereço de e-mail válido.',
-            'email.unique' => 'Este e-mail já está em uso.',
+            'email.unique' => 'Este Usuário já está em uso.',
             'password.required' => 'O campo senha é obrigatório.',
             'password.min' => 'A senha deve ter no mínimo :min caracteres.',
             'password.confirmed' => 'A confirmação da senha não corresponde.',
